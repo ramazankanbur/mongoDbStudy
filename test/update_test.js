@@ -5,7 +5,7 @@ describe('Updating records', () => {
     let riza;
 
     beforeEach((done) => {
-        riza = new User({ name: 'rıza', postCount: 0 });
+        riza = new User({ name: 'rıza', likes: 0 });
         riza.save().then(() => done());
     });
 
@@ -42,12 +42,12 @@ describe('Updating records', () => {
         assertName(User.findByIdAndUpdate(riza._id, { name: 'monarıza' }), done);
     });
 
-    it('A user can have their postCount incremented by 1', (done) => {
+    it('A user can have their likes incremented by 1', (done) => {
         //mongo update operators
-        User.update({ name: 'rıza' }, { $inc: { postCount: 1 } })
+        User.update({ name: 'rıza' }, { $inc: { likes: 1 } })
             .then(() =>  User.findOne({ name: 'rıza' }) )
             .then((user) => {
-                assert(user.postCount === 1);
+                assert(user.likes === 1);
                 done();
             });
 

@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const schema = mongoose.Schema;
+const PostSchema = require('./post');
+const Schema = mongoose.Schema;
 
-const UserSchema = new schema({
+const UserSchema = new Schema({
     name: {
         type: String,
         validate: {
@@ -10,7 +11,23 @@ const UserSchema = new schema({
         },
         required: [true, 'Name is required']
     },
-    postCount: Number
+    likes: Number,
+    posts: [PostSchema],
+    blogPosts: [{
+        type: Schema.Types.ObjectId,
+        ref: 'blogPost'
+    }]
+});
+
+UserSchema.virtual('postCount').get(function () {
+    return this.posts.length;
+});
+
+UserSchema.pre('remove', function (next) {
+    //require process for mongoose. for preventing loop
+    const BlogPost = mongoose.model('blogPost');
+    BlogPost.remove({ _id: { $in: this.blogPosts } })
+        .then(() => next());
 });
 
 const User = mongoose.model('user', UserSchema);
